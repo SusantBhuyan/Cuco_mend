@@ -5,9 +5,6 @@
 trigger:
 - main
 
-pool:
-  vmImage: windows
-
 steps:
 - task: kiuwan-baseline-analysis-task@2
   inputs:
