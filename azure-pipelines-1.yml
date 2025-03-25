@@ -1,20 +1,37 @@
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
+- main  # Adjust branch if needed
+
+pool:
+  vmImage: 'windows-latest'  # Use 'windows-latest' or 'macos-latest' if required
 
 steps:
-- task: kiuwan-baseline-analysis-task@2
-  inputs:
-    kiuwanConnection: 'Demo'
-    projectnameselector: 'kiuwanapp'
-    kiuwanappname: 'Demo'
-    includeinsight: true
-    uploadsnippets: true
-    uploadfiles: false
-    skipclones: false
-    overridedotkiuwan: true
-    overrideappmodel: false
-    includepatterns: ./KiuwanLocalAnalyzer -s 'E:\Projects\spiracle-master\src\main'
+
+# ✅ Step 1: Checkout the source code
+- checkout: self
+
+# ✅ Step 2: Display source files to check if they are downloaded correctly
+- script: |
+    echo "Checking source files in pipeline..."
+    ls -R E:\Projects\spiracle-master
+  displayName: 'Verify source files'
+
+# ✅ Step 3: Run Kiuwan Local Analyzer with Debug Mode
+- script: |
+    echo "Running Kiuwan Local Analyzer..."
+    ./KiuwanLocalAnalyzer -s E:\Projects\spiracle-master --debug
+  displayName: 'Run Kiuwan Analysis'
+
+# ✅ Step 4: Run Kiuwan with Explicit File Extensions (if required)
+- script: |
+    echo "Running Kiuwan with explicit file extensions..."
+    ./KiuwanLocalAnalyzer -s E:\Projects\spiracle-master --include-files=*.java,*.js,*.py
+  displayName: 'Run Kiuwan with custom file extensions'
+
+# ✅ Step 5: Handle Kiuwan Exit Code for Better Debugging
+- script: |
+    EXIT_CODE=$?
+    if [ $EXIT_CODE -ne 0 ]; then
+      echo "Kiuwan failed with exit code $EXIT_CODE"
+      exit $EXIT_CODE
+    fi
+  displayName: 'Handle Kiuwan Exit Code'
