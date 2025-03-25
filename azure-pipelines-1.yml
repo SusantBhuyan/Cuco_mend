@@ -17,5 +17,4 @@ steps:
     skipclones: false
     overridedotkiuwan: true
     overrideappmodel: false
-    dbanalysis: true
-    dbtechnology: 'none'
+    includepatterns: ./KiuwanLocalAnalyzer -s 'E:\Projects\spiracle-master\src\main'
